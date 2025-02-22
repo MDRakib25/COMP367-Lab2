@@ -18,4 +18,13 @@
   <build>
     <finalName>COMP367-Lab2</finalName>
   </build>
+  <build>
+    <plugins>
+        <plugin>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-maven-plugin</artifactId>
+            <version>9.4.44.v20210927</version>
+        </plugin>
+    </plugins>
+</build>
 </project>
