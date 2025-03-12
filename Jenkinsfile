@@ -2,7 +2,12 @@ pipeline {
     agent any
 
     tools {
+        // Use the Maven tool name configured in Jenkins
         maven 'Maven 3'
+    }
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('DockerHubCredentials')
     }
 
     stages {
@@ -18,21 +23,26 @@ pipeline {
             }
         }
 
-        stage('Run Morning Test') {
+        stage('Docker Build') {
             steps {
                 script {
-                    sh 'mvn jetty:run &'
-                    sleep(time: 10, unit: 'SECONDS') // Wait for the server to start
-                    sh 'curl http://localhost:8080/COMP367-Lab2/ > morning-greeting.txt'
+                    sh 'docker build -t mrakib25/comp367-lab2:latest .'
                 }
             }
         }
 
-        stage('Run Afternoon Test') {
+        stage('Docker Login') {
             steps {
                 script {
-                    sleep(time: 5, unit: 'SECONDS') // Simulating a later run
-                    sh 'curl http://localhost:8080/COMP367-Lab2/ > afternoon-greeting.txt'
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                script {
+                    sh 'docker push mrakib25/comp367-lab2:latest'
                 }
             }
         }
